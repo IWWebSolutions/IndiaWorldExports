@@ -1,0 +1,85 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: .
+    container_name: django_app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DJANGO_ALLOWED_HOSTS=*
+      - DJANGO_SECRET_KEY=django-insecure-o6$c%o0n=4b^4ysu(#)4^=@_-a@w0^j6rkuu$5^fwin&uga!8b
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - ELASTICSEARCH_HOST=https://elasticsearch:9200
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    networks:
+      - django_network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - django_network
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  db:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: django_password
+      POSTGRES_DB: django_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - django_network
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - django_network
+
+  celery:
+    build:
+      context: .
+    container_name: celery
+    command: celery -A your_project_name worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - web
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DJANGO_SECRET_KEY=your-secret-key
+    networks:
+      - django_network
+
+volumes:
+  es_data:
+  postgres_data:
+
+networks:
+  django_network:
