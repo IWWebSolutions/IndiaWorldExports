@@ -63,13 +63,63 @@ class ProductSearchView(View):
         data = [{'id': product.id, 'name': product.name} for product in products]
         return JsonResponse(data, safe=False)
 
+# @api_view(['GET'])
+# def universal_search(request):
+#     query = request.GET.get('query', '')
+#     search_type = request.GET.get('type', '')  # Get search type (product, supplier, lead)
 
-def search_products(request):
-    query = request.GET.get('q', '')
-    search = ProductDocument.search().query("multi_match", query=query, fields=['name', 'description'])
-    results = search.execute()
-    data = [{'id': hit.meta.id, 'name': hit.name, 'description': hit.description} for hit in results]
-    return JsonResponse(data, safe=False)
+#     if not query:
+#         return Response({"message": "No search query provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+#     if search_type == 'product':
+#         # Search for products
+#         results = Product.objects.filter(name__icontains=query)
+#         serialized_results = ProductSerializer(results, many=True)
+#     elif search_type == 'supplier':
+#         # Search for suppliers (using Signup model for suppliers)
+#         results = Signup.objects.filter(company_name__icontains=query)
+#         serialized_results = SignupSerializers(results, many=True)
+#     elif search_type == 'lead':
+#         # Search for leads
+#         results = leadsModel.objects.filter(products__icontains=query)
+#         serialized_results = LeadsSerializer(results, many=True)
+#     else:
+#         return Response({"message": "Invalid search type."}, status=status.HTTP_400_BAD_REQUEST)
+
+#     return Response(serialized_results.data)
+
+
+from django.db.models.functions import Lower
+@api_view(['GET'])
+def unified_search_api(request):
+    query = request.GET.get('q', '').strip().lower()
+    search_type = request.GET.get('type', 'product')
+    print("there are search type", search_type)
+
+    if not query:
+        return Response({'error': 'Query parameter is required'}, status=400)
+
+    results = []
+
+    if search_type == 'product':
+        products = Product.objects.filter(name__icontains=query)
+        results = ProductSerializer(products, many=True, context={'request': request}).data
+
+    elif search_type == 'supplier':
+        suppliers = Signup.objects.filter(company_services__icontains=query)
+        results = SignupSerializers(suppliers, many=True).data
+
+   
+    elif search_type == 'lead':
+        leads = leadsModel.objects.annotate(
+            lower_products=Lower('products')
+        ).filter(lower_products__icontains=query.strip())
+        results = LeadsSerializer(leads, many=True, context={'request': request}).data
+        print("Lead search query:", query)
+        print("Lead results:", leads.count())
+     
+    return Response({'results': results})  # ✅ Wrap results in dictionary
+
 
 #for signup 
 @api_view(['POST'])  # Make sure this decorator allows POST method

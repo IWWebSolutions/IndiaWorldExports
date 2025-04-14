@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.urls import path
-from .views import ProductSearchView, signup,  get_leads, dashboard, contact, UserProfileView, LoginView, LogoutView, send_otp, verify_otp, forgot_password, password_verify_otp, reset_password, check_email,lead_details, is_logged_in, get_all_original_leads, AllProductsAPIView, ProductsByCategoryAPIView
+from .views import ProductSearchView, signup,  get_leads, dashboard, contact, UserProfileView, LoginView, LogoutView, send_otp, verify_otp, forgot_password, password_verify_otp, reset_password, check_email,lead_details, is_logged_in, get_all_original_leads, AllProductsAPIView, ProductsByCategoryAPIView,  unified_search_api
 
 
 urlpatterns = [
@@ -11,7 +11,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login' ),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('signup/', signup, name='signup'),
-    path('api/search/', ProductSearchView.as_view(), name='product_search'),
+    # path('api/search/', ProductSearchView.as_view(), name='product_search'),
     # path("send-otp/", send_otp_view, name="send-otp"),
     path('get_leads/', get_leads, name='get_leads'),
     path('lead-details/<int:lead_id>/', lead_details, name='lead_details'),
@@ -31,6 +31,9 @@ urlpatterns = [
     path('api/payment/initiate/', views.initiate_payment, name='initiate_payment'),
     path('api/payment/success/', views.payment_success, name='payment_success'),
     path('api/payment/failure/', views.payment_failure, name='payment_failure'),
+    #path('api/search/', universal_search, name='universal_search'),
+    path('api/search/', unified_search_api, name='unified_search_api'),
+
     
 ]
 

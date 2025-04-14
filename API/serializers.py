@@ -20,10 +20,7 @@ class SignupSerializers(serializers.ModelSerializer):
         fields= ['id', 'name', 'email', 'password', 'phone_no', 'company_name', 'business_type', 'company_website', 'country_name', 'state', 'city', 'address', 'company_services']
 
 
-# class SignupSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = Signup
-#         fields = ['id', 'first_name', 'last_name', 'email', 'password']
+
         
 class LoginSerializers(serializers.ModelSerializer):
     class Meta:
@@ -76,27 +73,7 @@ class LeadsSerializer(serializers.ModelSerializer):
 
 
 
-# class LeadsSerializer(serializers.ModelSerializer):
-#     company_name = serializers.SerializerMethodField()
-#     company_email = serializers.SerializerMethodField()
-#     phone_no = serializers.SerializerMethodField()
-
-#     class Meta:
-#         model = leadsModel
-#         fields = ['id', 'products', 'quantity', 'company_name', 'phone_no','company_email', 'country']
-
-#     def get_company_name(self, obj):
-#         request = self.context.get('request')
-#         return obj.company_name if request and request.user.is_authenticated else "XXXXXXXX"
-
-#     def get_company_email(self, obj):
-#         request = self.context.get('request')
-#         return obj.company_email if request and request.user.is_authenticated else "XXXXXXXX"
-
-#     def get_phone_no(self, obj):
-#         request = self.context.get('request')
-#         return obj.phone_no if request and request.user.is_authenticated else "XXXXXXXXXX"
-    
+   
 
 class QuickEnquirySerializer(serializers.ModelSerializer):
     class Meta:
@@ -118,17 +95,6 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         return instance
 
 
-# class ProductTypeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ProductType
-#         fields = '__all__'
-
-# class ProductSerializer(serializers.ModelSerializer):
-#     types = ProductTypeSerializer(many=True)  # Include related types
-
-#     class Meta:
-#         model = Product
-#         fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
@@ -144,19 +110,7 @@ class ProductSerializer(serializers.ModelSerializer):
         return None  # ✅ Prevent AttributeError
 
 
-# class ProductSerializer(serializers.ModelSerializer):
-#     image_url = serializers.SerializerMethodField()
 
-#     class Meta:
-#         model = Product
-#         fields = ['id', 'name', 'description', 'image_url']  # ✅ Add 'image_url' here
-
-#     def get_image_url(self, obj):
-#         request = self.context.get('request')
-#         return request.build_absolute_uri(obj.image.url) if obj.image else None
-
-
-# serializers.py
 
 class PaymentInitiateSerializer(serializers.Serializer):
     firstname = serializers.CharField()
