@@ -280,6 +280,26 @@ def get_leads(request):
 
     return Response(serializer.data)
 
+# @api_view(['GET'])
+# def get_leads(request):
+#     query = request.GET.get('q', '')
+#     leads = leadsModel.objects.filter(products__icontains=query) if query else leadsModel.objects.all()
+
+#     if request.user.is_authenticated:
+#         # Permission check using Django's built-in permission system
+#         if not request.user.has_perm('API.view_leadsModel'):
+#             return Response({"error": "You don't have permission to view leads."}, status=403)
+
+#         # Access limit check
+#         one_week_ago = now() - timedelta(weeks=1)
+#         views_this_week = LeadAccess.objects.filter(user=request.user, accessed_at__gte=one_week_ago).count()
+
+#         if views_this_week >= 2:
+#             return Response({"error": "Lead limit reached. Try again next week."}, status=403)
+
+#     serializer = LeadsSerializer(leads, many=True, context={'request': request})
+#     return Response(serializer.data)
+
 
 @api_view(['GET'])
 def get_all_original_leads(request, lead_id):
@@ -302,29 +322,51 @@ def get_all_original_leads(request, lead_id):
         return JsonResponse({"error": "Lead not found"}, status=404)
 
 
+# @api_view(['GET'])
+# def lead_details(request, lead_id):
+#     if not request.user.is_authenticated:
+#         return Response({"error": "Authentication required"}, status=401)
+
+#     lead = get_object_or_404(leadsModel, id=lead_id)
+    
+#     # Fetch the logged-in user from `Signup` model
+#     user = get_object_or_404(Signup, id=request.user.id)
+
+#     # Check weekly access limit
+#     one_week_ago = now() - timedelta(weeks=1)
+#     views_this_week = LeadAccess.objects.filter(user=user, accessed_at__gte=one_week_ago).count()
+
+#     if views_this_week >= 2:
+#         return Response({"error": "Lead limit reached. You can access more leads next week."}, status=403)
+
+#     # Log access
+#     LeadAccess.objects.create(user=user)
+
+#     # Serialize and return full lead details
+#     serializer = LeadsSerializer(lead)
+#     return Response(serializer.data)
+
 @api_view(['GET'])
 def lead_details(request, lead_id):
     if not request.user.is_authenticated:
         return Response({"error": "Authentication required"}, status=401)
 
-    lead = get_object_or_404(leadsModel, id=lead_id)
-    
-    # Fetch the logged-in user from `Signup` model
     user = get_object_or_404(Signup, id=request.user.id)
 
-    # Check weekly access limit
+    if not user.can_view_leads:
+        return Response({"error": "You don't have permission to view leads."}, status=403)
+
     one_week_ago = now() - timedelta(weeks=1)
     views_this_week = LeadAccess.objects.filter(user=user, accessed_at__gte=one_week_ago).count()
 
     if views_this_week >= 2:
-        return Response({"error": "Lead limit reached. You can access more leads next week."}, status=403)
+        return Response({"error": "Lead limit reached. Try again next week."}, status=403)
 
-    # Log access
     LeadAccess.objects.create(user=user)
-
-    # Serialize and return full lead details
-    serializer = LeadsSerializer(lead)
+    lead = get_object_or_404(leadsModel, id=lead_id)
+    serializer = LeadsSerializer(lead, context={'request': request})
     return Response(serializer.data)
+
 
 
 

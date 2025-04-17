@@ -25,10 +25,15 @@ class LeadAccessAdmin(admin.ModelAdmin):
     list_filter = ('accessed_at',)
 
     
+# @admin.register(Signup)
+# class SignupAdmin(admin.ModelAdmin):
+#     list_display=('id', 'name', 'email', 'password', 'phone_no', 'company_name', 'business_type', 'company_website', 'country_name', 'state', 'city', 'address', 'company_services')
+  
 @admin.register(Signup)
 class SignupAdmin(admin.ModelAdmin):
-    list_display=('id', 'name', 'email', 'password', 'phone_no', 'company_name', 'business_type', 'company_website', 'country_name', 'state', 'city', 'address', 'company_services')
-  
+    list_display = ('name', 'email', 'can_view_leads')
+    list_editable = ('can_view_leads',)
+
 
 @admin.register(Login)
 class LoginAdmin(admin.ModelAdmin):

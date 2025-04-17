@@ -41,6 +41,8 @@ class Signup(models.Model):
     address = models.CharField(max_length=200, default="No Address Provided")  
     company_services = models.CharField(max_length=100, default="General Services")
 
+    can_view_leads = models.BooleanField(default=False)  # ✅ NEW FIELD
+
 #Lead Access Model
 class LeadAccess(models.Model):
     user = models.ForeignKey(Signup, on_delete=models.CASCADE)  
