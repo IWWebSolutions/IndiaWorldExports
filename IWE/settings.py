@@ -31,14 +31,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'API',
-    
+    "rest_framework_simplejwt.token_blacklist",
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-}
 
 
 MIDDLEWARE = [
@@ -104,6 +98,15 @@ CORS_ALLOWED_ORIGINS = [
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # you can keep SessionAuthentication if you ever want browsable‐API login
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

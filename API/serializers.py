@@ -21,17 +21,6 @@ class SignupSerializers(serializers.ModelSerializer):
 
 
 
-        
-class LoginSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = Login
-        fields = ['id', 'email', 'password'] 
-        
-        
-class ContactSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Contact
-        fields = ['id', 'name', 'email', 'phone_no', 'subject', 'message']
 
 class LeadsSerializer(serializers.ModelSerializer):
     company_name = serializers.SerializerMethodField()
@@ -72,6 +61,18 @@ class LeadsSerializer(serializers.ModelSerializer):
         return obj.phone_no if request and request.user.is_authenticated else self.mask_phone(obj.phone_no)
 
 
+
+        
+class LoginSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Login
+        fields = ['id', 'email', 'password'] 
+        
+        
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = ['id', 'name', 'email', 'phone_no', 'subject', 'message']
 
    
 
