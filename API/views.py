@@ -683,26 +683,52 @@ def quick_enquiries_api(request):
 
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
+
 class SuperuserLoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        # Step 1: Get user by email
+        if not username or not password:
+            return Response({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             user = User.objects.get(username=username) 
         except User.DoesNotExist:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Step 2: Authenticate user
         user = authenticate(username=user.username, password=password)
         if user is not None:
-            # Step 3: Ensure superuser
             if not user.is_superuser:
                 return Response({"error": "Access denied: superusers only"}, status=status.HTTP_403_FORBIDDEN)
 
-            # Step 4: Return token
             token, _ = Token.objects.get_or_create(user=user)
-            return Response({"token": token.key}, status=status.HTTP_200_OK)
+            return Response({
+                "token": token.key,
+                "username": user.username,
+                "email": user.email
+            }, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+#for admin logout
+        
+from rest_framework.permissions import AllowAny
+
+class Logout(APIView):
+    permission_classes = [AllowAny]  # Allow even if access token is expired
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"detail": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

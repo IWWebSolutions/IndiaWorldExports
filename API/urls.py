@@ -7,7 +7,7 @@ from .views import (
     get_all_original_leads, AllProductsAPIView, ProductsByCategoryAPIView,
     unified_search_api, initiate_payment, payment_success, payment_failure,
     leads_api, users_api, categories_api, contacts_api, quick_enquiries_api,
-    SuperuserLoginView, searchbar
+    SuperuserLoginView, searchbar, Logout
 )
 
 urlpatterns = [
@@ -56,4 +56,5 @@ urlpatterns = [
     path('contacts/', contacts_api, name='contacts_api'),
     path('quick-enquiries/', quick_enquiries_api, name='quick_enquiries_api'),
     path('superuser-login/', SuperuserLoginView.as_view(), name='superuser_login'),
+    path('admin/logout/', Logout.as_view(), name='adminlogout'),
 ]
