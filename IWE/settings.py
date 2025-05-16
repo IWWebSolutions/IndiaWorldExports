@@ -103,13 +103,8 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 
-CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = [
-    "https://indiaworldexports.in",
-    "https://api.indiaworldexports.in",
-]
 
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 CORS_ALLOW_CREDENTIALS = True
