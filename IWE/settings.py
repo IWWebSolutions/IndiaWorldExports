@@ -102,9 +102,9 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'Authorization',
 ]
 
-<<<<<<< HEAD
+
 CORS_ALLOW_ALL_ORIGINS = False
-=======
+
 
 
 CORS_ALLOW_ALL_ORIGINS = True
